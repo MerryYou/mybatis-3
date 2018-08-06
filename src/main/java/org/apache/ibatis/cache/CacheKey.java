@@ -22,6 +22,15 @@ import java.util.List;
 import org.apache.ibatis.reflection.ArrayUtil;
 
 /**
+ * Mybatis中涉及到动态SQL的原因，缓存项的key不能仅仅通过一个String来表示，
+ * 所以通过CacheKey来封装缓存的Key值，CacheKey可以封装多个影响缓存项的因素；
+ * 判断两个CacheKey是否相同关键是比较两个对象的hash值是否一致；
+ *
+ * 构成CacheKey的对象
+ * mappedStatment的id
+ * 指定查询结果集的范围（分页信息）
+ * 查询所使用的SQL语句
+ * 用户传递给SQL语句的实际参数值
  * @author Clinton Begin
  */
 public class CacheKey implements Cloneable, Serializable {
