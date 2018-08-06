@@ -23,12 +23,18 @@ import org.apache.ibatis.cache.Cache;
 import org.apache.ibatis.cache.CacheException;
 
 /**
+ * 缓存最基础实现
  * @author Clinton Begin
  */
 public class PerpetualCache implements Cache {
 
+  /**
+   * 每个缓存唯一标识ID
+   */
   private final String id;
-
+  /**
+   * 缓存内部实现基于HashMap实现
+   */
   private Map<Object, Object> cache = new HashMap<>();
 
   public PerpetualCache(String id) {
@@ -70,6 +76,11 @@ public class PerpetualCache implements Cache {
     return null;
   }
 
+  /**
+   * 如果两个缓存的ID相同则两个缓存相同
+   * @param o
+   * @return
+   */
   @Override
   public boolean equals(Object o) {
     if (getId() == null) {

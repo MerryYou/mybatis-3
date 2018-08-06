@@ -25,6 +25,8 @@ import org.apache.ibatis.cache.Cache;
  * Lru (least recently used) cache decorator
  *
  * @author Clinton Begin
+ * 最近最少使用缓存
+ * 基于LinkedHashMap 覆盖其 removeEldestEntry 方法实现
  */
 public class LruCache implements Cache {
 
@@ -50,7 +52,10 @@ public class LruCache implements Cache {
   public void setSize(final int size) {
     keyMap = new LinkedHashMap<Object, Object>(size, .75F, true) {
       private static final long serialVersionUID = 4267176411845948333L;
-
+      //核心就是覆盖 LinkedHashMap.removeEldestEntry方法,
+      //返回true或false告诉 LinkedHashMap要不要删除此最老键值
+      //LinkedHashMap内部其实就是每次访问或者插入一个元素都会把元素放到链表末尾，
+      //这样不经常访问的键值就在链表开头
       @Override
       protected boolean removeEldestEntry(Map.Entry<Object, Object> eldest) {
         boolean tooBig = size() > size;
@@ -65,11 +70,13 @@ public class LruCache implements Cache {
   @Override
   public void putObject(Object key, Object value) {
     delegate.putObject(key, value);
+    //增加缓存记录的时候，判断是否需要移除最少使用的元素
     cycleKeyList(key);
   }
 
   @Override
   public Object getObject(Object key) {
+    //获取数据的时候同时调用链表get方法，将经常访问的对象放入到链表尾部
     keyMap.get(key); //touch
     return delegate.getObject(key);
   }
@@ -93,6 +100,7 @@ public class LruCache implements Cache {
   private void cycleKeyList(Object key) {
     keyMap.put(key, key);
     if (eldestKey != null) {
+      //如果eldestKey不为空，则代表有记录被移除，此处需要同步移除代理缓存中的记录
       delegate.removeObject(eldestKey);
       eldestKey = null;
     }

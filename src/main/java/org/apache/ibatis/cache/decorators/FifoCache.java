@@ -25,6 +25,8 @@ import org.apache.ibatis.cache.Cache;
  * FIFO (first in, first out) cache decorator
  *
  * @author Clinton Begin
+ * 失效缓存装饰器，内部维护双端列表，如果缓存数量超过1024个，则移除最先放入的一个
+ * 从列表尾放入，从列表头部移除
  */
 public class FifoCache implements Cache {
 
@@ -79,6 +81,10 @@ public class FifoCache implements Cache {
     return null;
   }
 
+  /**
+   * 放入缓存key，如果缓存超过1024个，则移除最开始放入的缓存
+   * @param key
+   */
   private void cycleKeyList(Object key) {
     keyList.addLast(key);
     if (keyList.size() > size) {

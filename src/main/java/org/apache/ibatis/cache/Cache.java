@@ -35,24 +35,26 @@ import java.util.concurrent.locks.ReadWriteLock;
  *  initialize();
  * }
  * </pre>
- *
+ * 缓存模块接口，缓存模块使用了装饰器模式
  * @author Clinton Begin
  */
-
 public interface Cache {
 
   /**
+   * 缓存实现类ID
    * @return The identifier of this cache
    */
   String getId();
 
   /**
+   * 往缓存中添加数据，key一般是CacheKey对象
    * @param key Can be any object but usually it is a {@link CacheKey}
    * @param value The result of a select.
    */
   void putObject(Object key, Object value);
 
   /**
+   * 根据指定的key从缓存中获取数据
    * @param key The key
    * @return The object stored in the cache.
    */
@@ -68,20 +70,21 @@ public interface Cache {
    * This way other threads will wait for the value to be 
    * available instead of hitting the database.
    *
-   * 
+   * 根据指定的key从缓存中删除数据
    * @param key The key
    * @return Not used
    */
   Object removeObject(Object key);
 
   /**
+   * 清空缓存
    * Clears this cache instance
    */  
   void clear();
 
   /**
    * Optional. This method is not called by the core.
-   * 
+   * 获取缓存大小
    * @return The number of elements stored in the cache (not its capacity).
    */
   int getSize();
@@ -90,7 +93,7 @@ public interface Cache {
    * Optional. As of 3.2.6 this method is no longer called by the core.
    *  
    * Any locking needed by the cache must be provided internally by the cache provider.
-   * 
+   * 获取读写锁
    * @return A ReadWriteLock 
    */
   ReadWriteLock getReadWriteLock();
