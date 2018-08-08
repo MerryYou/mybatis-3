@@ -32,24 +32,54 @@ import javax.sql.DataSource;
 import org.apache.ibatis.io.Resources;
 
 /**
+ * 非连接池数据源
  * @author Clinton Begin
  * @author Eduardo Macarron
  */
 public class UnpooledDataSource implements DataSource {
-  
+  /**
+   * 驱动类类加载器
+   */
   private ClassLoader driverClassLoader;
+  /**
+   * 数据库连接信息信息
+   */
   private Properties driverProperties;
+  /**
+   * 已注册驱动类缓存
+   */
   private static Map<String, Driver> registeredDrivers = new ConcurrentHashMap<>();
 
   private String driver;
   private String url;
   private String username;
   private String password;
-
+  /**
+   * 是否自动提交
+   */
   private Boolean autoCommit;
+  /**
+   * 事务隔离级别
+   */
   private Integer defaultTransactionIsolationLevel;
 
   static {
+    /**
+     * Class.forName("驱动类")的时候将驱动注册到了DriverManager中
+     * 以下是Mysql驱动代码
+     * public class Driver extends NonRegisteringDriver implements java.sql.Driver {
+     *     public Driver() throws SQLException {
+     *     }
+     *     static {
+     *         try {
+     *              //此处将驱动注册到DriverManager中
+     *             DriverManager.registerDriver(new Driver());
+     *         } catch (SQLException var1) {
+     *             throw new RuntimeException("Can't register driver!");
+     *         }
+     *     }
+     * }
+     */
     Enumeration<Driver> drivers = DriverManager.getDrivers();
     while (drivers.hasMoreElements()) {
       Driver driver = drivers.nextElement();
@@ -196,9 +226,17 @@ public class UnpooledDataSource implements DataSource {
     return doGetConnection(props);
   }
 
+  /**
+   * 此处获取连接的方式和JDBC原始获取连接的方式一样
+   * @param properties
+   * @return
+   * @throws SQLException
+   */
   private Connection doGetConnection(Properties properties) throws SQLException {
     initializeDriver();
+    //此处获取连接的方式和JDBC原始获取连接的方式一样
     Connection connection = DriverManager.getConnection(url, properties);
+    //设置事务是否自动提交和事务隔离级别
     configureConnection(connection);
     return connection;
   }
