@@ -21,3 +21,8 @@ Essentials
 * [See the docs](http://mybatis.github.io/mybatis-3)
 * [Download Latest](https://github.com/mybatis/mybatis-3/releases)
 * [Download Snapshot](https://oss.sonatype.org/content/repositories/snapshots/org/mybatis/mybatis/)
+
+MyBatis部分模块中文注释
+=======================
+* [缓存模块中文注释](https://github.com/MerryYou/mybatis-3/tree/master/src/main/java/org/apache/ibatis/cache)
+* [数据源模块中文注释](https://github.com/MerryYou/mybatis-3/tree/master/src/main/java/org/apache/ibatis/datasource)
