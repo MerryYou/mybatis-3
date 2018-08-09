@@ -26,6 +26,8 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
+ * PreparedStatement日志增强类，让PreparedStatement具备打印日志的能力
+ * 该类主要负责打印参数信息，并创建ResultSetLogger
  * PreparedStatement proxy to add logging
  * 
  * @author Clinton Begin
@@ -34,6 +36,9 @@ import org.apache.ibatis.reflection.ExceptionUtil;
  */
 public final class PreparedStatementLogger extends BaseJdbcLogger implements InvocationHandler {
 
+  /**
+   * 真正PreparedStatement对象
+   */
   private final PreparedStatement statement;
 
   private PreparedStatementLogger(PreparedStatement stmt, Log statementLog, int queryStack) {
@@ -44,20 +49,27 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
   @Override
   public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
     try {
+      //如果是Object类的方法，直接执行
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, params);
-      }          
+      }
+      //如果是执行增删改查相关的方法则打印参数信息
       if (EXECUTE_METHODS.contains(method.getName())) {
         if (isDebugEnabled()) {
+          //打印参数信息
           debug("Parameters: " + getParameterValueString(), true);
         }
+        //清空参数信息
         clearColumnInfo();
+        //如果是执行查询则创建带日志增强的ResultSet对象并返回
         if ("executeQuery".equals(method.getName())) {
           ResultSet rs = (ResultSet) method.invoke(statement, params);
+          //创建日志增强的动态代理对象
           return rs == null ? null : ResultSetLogger.newInstance(rs, statementLog, queryStack);
         } else {
           return method.invoke(statement, params);
         }
+        //执行设置参数相关的方法则设置相应的参数
       } else if (SET_METHODS.contains(method.getName())) {
         if ("setNull".equals(method.getName())) {
           setColumn(params[0], null);
@@ -66,11 +78,13 @@ public final class PreparedStatementLogger extends BaseJdbcLogger implements Inv
         }
         return method.invoke(statement, params);
       } else if ("getResultSet".equals(method.getName())) {
+        //如果是获取结果集方法，则创建日志增强的ResultSet动态代理对象返回
         ResultSet rs = (ResultSet) method.invoke(statement, params);
         return rs == null ? null : ResultSetLogger.newInstance(rs, statementLog, queryStack);
       } else if ("getUpdateCount".equals(method.getName())) {
         int updateCount = (Integer) method.invoke(statement, params);
         if (updateCount != -1) {
+          //打印影响的记录数
           debug("   Updates: " + updateCount, false);
         }
         return updateCount;

@@ -20,12 +20,16 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
+ * Log4j日志适配器实现类
  * @author Eduardo Macarron
  */
 public class Log4jImpl implements Log {
   
   private static final String FQCN = Log4jImpl.class.getName();
 
+  /**
+   * 真正提供日志能力的Log4j日志类
+   */
   private final Logger log;
 
   public Log4jImpl(String clazz) {

@@ -19,10 +19,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * CommonsLoging的日志适配器实现类
  * @author Clinton Begin
  */
 public class JakartaCommonsLoggingImpl implements org.apache.ibatis.logging.Log {
 
+  /**
+   * 真正实现打印的CommonsLoging日志类
+   */
   private final Log log;
 
   public JakartaCommonsLoggingImpl(String clazz) {

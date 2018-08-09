@@ -21,10 +21,13 @@ import java.util.logging.Logger;
 import org.apache.ibatis.logging.Log;
 
 /**
+ * jdk日志适配器实现类
  * @author Clinton Begin
  */
 public class Jdk14LoggingImpl implements Log {
-
+  /**
+   * 真正提供日志功能的jdk日志类
+   */
   private final Logger log;
 
   public Jdk14LoggingImpl(String clazz) {

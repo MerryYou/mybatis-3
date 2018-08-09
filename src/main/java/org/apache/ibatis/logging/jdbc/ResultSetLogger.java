@@ -29,6 +29,8 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
+ * ResultSet日志增强类，让ResultSet具备日志打印能力
+ * 该类主要负责打印数据结果信息
  * ResultSet proxy to add logging
  * 
  * @author Clinton Begin
@@ -36,13 +38,27 @@ import org.apache.ibatis.reflection.ExceptionUtil;
  * 
  */
 public final class ResultSetLogger extends BaseJdbcLogger implements InvocationHandler {
-
+  /**
+   * 存放大字段类型集合
+   */
   private static Set<Integer> BLOB_TYPES = new HashSet<>();
   private boolean first = true;
+  /**
+   * 数据记录游标
+   */
   private int rows;
+  /**
+   * 真正的结果集对象
+   */
   private final ResultSet rs;
+  /**
+   * 记录大字段的位置
+   */
   private final Set<Integer> blobColumns = new HashSet<>();
 
+  /**
+   * 大字段类型
+   */
   static {
     BLOB_TYPES.add(Types.BINARY);
     BLOB_TYPES.add(Types.BLOB);
@@ -62,20 +78,27 @@ public final class ResultSetLogger extends BaseJdbcLogger implements InvocationH
   @Override
   public Object invoke(Object proxy, Method method, Object[] params) throws Throwable {
     try {
+      //如果是Object类继承的方法直接执行
       if (Object.class.equals(method.getDeclaringClass())) {
         return method.invoke(this, params);
       }    
       Object o = method.invoke(rs, params);
       if ("next".equals(method.getName())) {
+        //如果执行的是resultSet.next()方法，则判断是否存在记录
         if (((Boolean) o)) {
+          //存在记录，游标记录数+1
           rows++;
           if (isTraceEnabled()) {
+            //获取ResultSet元数据信息
             ResultSetMetaData rsmd = rs.getMetaData();
+            //获取结果集字段总数
             final int columnCount = rsmd.getColumnCount();
             if (first) {
+              //第一行，打印字段名信息
               first = false;
               printColumnHeaders(rsmd, columnCount);
             }
+            //打印结果集信息
             printColumnValues(columnCount);
           }
         } else {

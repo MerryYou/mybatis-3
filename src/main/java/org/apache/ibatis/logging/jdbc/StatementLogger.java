@@ -25,6 +25,9 @@ import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.reflection.ExceptionUtil;
 
 /**
+ * Statement日志增强类，让Statement具备打印日志的能力
+ * 该类主要负责打印参数信息，并创建ResultSetLogger
+ * 具体可参考PrepareStatementLogger类
  * Statement proxy to add logging
  * 
  * @author Clinton Begin

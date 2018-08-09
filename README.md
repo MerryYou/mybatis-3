@@ -26,3 +26,4 @@ MyBatis部分模块中文注释
 =======================
 * [缓存模块中文注释](https://github.com/MerryYou/mybatis-3/tree/master/src/main/java/org/apache/ibatis/cache)
 * [数据源模块中文注释](https://github.com/MerryYou/mybatis-3/tree/master/src/main/java/org/apache/ibatis/datasource)
+* [日志模块中文注释](https://github.com/MerryYou/mybatis-3/tree/master/src/main/java/org/apache/ibatis/logging)
